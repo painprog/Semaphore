@@ -45,6 +45,7 @@
             this.input.Size = new System.Drawing.Size(392, 39);
             this.input.TabIndex = 1;
             this.input.Text = "";
+            this.input.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.input_KeyPress);
             // 
             // label1
             // 
@@ -121,6 +122,7 @@
             this.Controls.Add(this.input);
             this.Name = "Form1";
             this.Text = "Form1";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

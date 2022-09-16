@@ -9,32 +9,28 @@ namespace Semaphore
         int size;
 
         public char[] Buffer { get; private set; }
-        public string GetBuffer => Buffer.ToString();
 
         System.Threading.Semaphore empty;
         System.Threading.Semaphore full;
-        System.Threading.Semaphore busy;
+        System.Threading.Semaphore binary;
 
         public CustomBuffer(int size)
         {
             this.size = size;
             Buffer = new char[this.size];
 
-            for (int i = 0; i < this.size; i++)
-                Buffer[i] = ' ';
-
             empty = new System.Threading.Semaphore(this.size, this.size);
             full = new System.Threading.Semaphore(0, this.size);
-            busy = new System.Threading.Semaphore(1, 1);
+            binary = new System.Threading.Semaphore(1, 1);
         }
 
         public void Write(char item) // Producer
         {
             empty.WaitOne();
-            busy.WaitOne();
+            binary.WaitOne();
             Buffer[head] = item;
             head = head++ % size;
-            busy.Release();
+            binary.Release();
             full.Release();
         }
 
@@ -43,20 +39,20 @@ namespace Semaphore
             bool isCharMatch = false;
 
             full.WaitOne();
-            busy.WaitOne();
+            binary.WaitOne();
 
             var item = Buffer[tail];
 
             switch (id)
             {
                 case 1:
-                    isCharMatch = Char.IsLetter(item);
+                    isCharMatch = IsEnglishLetter(item);
                     break;
                 case 2:
                     isCharMatch = Char.IsNumber(item);
                     break;
                 case 3:
-                    isCharMatch = Char.IsSymbol(item);
+                    isCharMatch = !Char.IsLetter(item) && !Char.IsNumber(item);
                     break;
             }
 
@@ -64,18 +60,21 @@ namespace Semaphore
             {
                 tail = tail++ % size;
 
-                busy.Release();
+                binary.Release();
                 empty.Release();
 
                 return (isCharMatch, item);
             }
             else
             {
-                busy.Release();
+                binary.Release();
                 full.Release();
                 return (isCharMatch, item);
             }
         }
+
+        public bool IsEnglishLetter(char c)
+            => (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
 
     }
 }
