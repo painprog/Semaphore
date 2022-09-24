@@ -19,9 +19,6 @@ namespace Semaphore
             this.size = size;
             Buffer = new char[this.size];
 
-            //for (int i = 0; i < this.size; i++)
-            //    Buffer[i] = ' ';
-
             empty = new System.Threading.Semaphore(this.size, this.size);
             full = new System.Threading.Semaphore(0, this.size);
             binary = new System.Threading.Semaphore(1, 1);
