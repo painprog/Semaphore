@@ -34,7 +34,7 @@ namespace Semaphore
             full.Release();
         }
 
-        public (bool, char) Read(int id) // Consumer
+        public (bool, char) Read(ConsumeType consumeType) // Consumer
         {
             bool isCharMatch = false;
 
@@ -43,15 +43,15 @@ namespace Semaphore
 
             var item = Buffer[tail];
 
-            switch (id)
+            switch (consumeType)
             {
-                case 1:
+                case ConsumeType.EnglishLetters:
                     isCharMatch = IsEnglishLetter(item);
                     break;
-                case 2:
+                case ConsumeType.Numbers:
                     isCharMatch = Char.IsNumber(item);
                     break;
-                case 3:
+                case ConsumeType.Symbols:
                     isCharMatch = !Char.IsLetter(item) && !Char.IsNumber(item);
                     break;
             }

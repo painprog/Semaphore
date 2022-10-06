@@ -9,7 +9,6 @@ namespace Semaphore
     {
         char inputChar;
         bool isNew;
-        bool isFirstStart;
         CustomBuffer Buffer;
 
         public Form1()
@@ -42,11 +41,11 @@ namespace Semaphore
                 }
         }
 
-        void Consume(int id, RichTextBox textBox)
+        void Consume(ConsumeType consumeType, RichTextBox textBox)
         {
             while (true)
             {
-                var result = Buffer.Read(id);
+                var result = Buffer.Read(consumeType);
                 if (result.Item1)
                     Invoke(new Action(() => textBox.Text += result.Item2));
             }
@@ -54,35 +53,28 @@ namespace Semaphore
 
         void ConsumeLetters()
         {
-            Consume(1, englishLetters);
+            Consume(ConsumeType.EnglishLetters, englishLetters);
         }
 
         void ConsumeNumbers()
         {
-            Consume(2, numbers);
+            Consume(ConsumeType.Numbers, numbers);
         }
 
         void ConsumeSymbols()
         {
-            Consume(3, symbols);
+            Consume(ConsumeType.Symbols, symbols);
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            isFirstStart = true;
+            ThreadsStart();
         }
 
         private void input_KeyPress(object sender, KeyPressEventArgs e)
         {
-            var key = e.KeyChar;
-            inputChar = key;
+            inputChar = e.KeyChar;
             isNew = true;
-
-            if (isFirstStart)
-            {
-                isFirstStart = false;
-                ThreadsStart();
-            }
         }
     }
 }
